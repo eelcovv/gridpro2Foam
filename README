@@ -1,0 +1,14 @@
+
+
+GridPro2FOAM converter
+
+
+1.) periodic patches
+periodic surfaces are automatically converted to cyclic patches
+
+2.) cyclic patches
+the cyclic patch needs to be defined as an internal surface. By default the internal surfaces are treated as
+standard block connectivities. However, by specifying the option --cyclic <surface number> at the end of the command line,
+the internal surface will be treated as a cyclic patch.
+
+Compiled at node with gcc libs from RedHad 5
