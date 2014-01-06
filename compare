@@ -1,9 +1,0 @@
-#!/bin/tcsh
-set DIR=~vincent/GridPro2FOAM/GridPro2FOAM_5.8/
-foreach file (Makefile *.cpp *.hpp *.h)
-diff -w -b -i --brief $DIR/$file $file > /dev/null
-if ( $status == 1 ) then
-  echo $DIR/$file differs
-  tkdiff -w -b -i $file $DIR/$file
-endif
-end

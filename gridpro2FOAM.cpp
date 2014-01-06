@@ -80,6 +80,7 @@ main(int argc, char *argv[])
 	bool coarseMesh = false;
 	bool axisym=false;
 	bool forceCreateDirectory = false;
+	int compte ;
 	int count ;
 	int id1, id2 ;
 	RTechTimer timer;
@@ -104,7 +105,7 @@ main(int argc, char *argv[])
 	vector<string> ofBCNative ;
 	vector<string> ofBCNativeInGridPro ;
 	// be sure to follow the same order ing than in az_mngr/ptymap.OpenFOAM
-	count = 5 ;
+	compte = 5 ;
 	ofBCNative.push_back( "patch") ;
 	ofBCNative.push_back( "symmetryPlane") ;
 	ofBCNative.push_back( "empty") ;
@@ -115,9 +116,9 @@ main(int argc, char *argv[])
 	for (itS = ofBCNative.begin() ; itS != ofBCNative.end()  ; itS++)
 	{
 		string s = (*itS);
-		string prefix = "_"+ToString(count,3)+"_" ;
+		string prefix = "_"+ToString(compte,3)+"_" ;
 		ofBCNativeInGridPro.push_back( prefix + s);
-		count++ ;
+		compte++ ;
 	}
 
 
@@ -978,21 +979,21 @@ main(int argc, char *argv[])
 				bool BCtypeIsOfBCNative = false ;
 				id1 = 0 ;
 				id2 = 0 ;
-				count = 0 ;
+				compte = 0 ;
 				for (itS = ofBCNativeInGridPro.begin() ; itS != ofBCNativeInGridPro.end()  ; itS++)
 				{
 					s = (*itS);
 					if (BCname == s)
 					{
 						BCnameIsOfBCNative = true ;
-						id1 = count ;
+						id1 = compte ;
 					}
 					if (BCtype == s)
 					{
 						BCtypeIsOfBCNative = true ;
-						id2 = count ;
+						id2 = compte ;
 					}
-					count ++ ;
+					compte ++ ;
 				}
 				if (BCnameIsOfBCNative && !BCtypeIsOfBCNative)
 				{
@@ -1079,21 +1080,21 @@ main(int argc, char *argv[])
 	bool BCtypeIsOfBCNative = false ;
 	id1 = 0 ;
 	id2 = 0 ;
-	count = 0 ;
+	compte = 0 ;
 	for (itS = ofBCNativeInGridPro.begin() ; itS != ofBCNativeInGridPro.end()  ; itS++)
 	{
 		s = (*itS);
 		if (BCname == s)
 		{
 			BCnameIsOfBCNative = true ;
-			id1 = count ;
+			id1 = compte ;
 		}
 		if (BCtype == s)
 		{
 			BCtypeIsOfBCNative = true ;
-			id2 = count ;
+			id2 = compte ;
 		}
-		count ++ ;
+		compte ++ ;
 	}
 	if (BCnameIsOfBCNative && !BCtypeIsOfBCNative)
 	{
