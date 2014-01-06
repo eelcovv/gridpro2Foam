@@ -43,9 +43,9 @@ int GetLine(char *line, FILE *fp)
 
 string ToString(int value,int digitsCount)
 {
-    ostringstream os;
-    os<<setfill('0')<<setw(digitsCount)<<value;
-    return os.str();
+	ostringstream os;
+	os<<setfill('0')<<setw(digitsCount)<<value;
+	return os.str();
 }
 
 static bool compareFaceSumId(Face *f1, Face *f2)
@@ -100,7 +100,7 @@ main(int argc, char *argv[])
 	const char * cmd  ;
 
 	// version nbr
-	const string VERSION = "5.14" ;
+	const string VERSION = "5.15" ;
 
 	vector<string> ofBCNative ;
 	vector<string> ofBCNativeInGridPro ;
@@ -259,6 +259,7 @@ main(int argc, char *argv[])
 	block->CreateBoundaryZoneVector(boundaryZonePatches.size());
 	blocks.push_back(block);
 	}
+	bool is2D = (K==1);
 	fclose(f);
 
 	// now handle the connectivity
@@ -937,6 +938,67 @@ main(int argc, char *argv[])
 		string s2 = (*itS2);
 		cout << PREFIX_INFO  <<" - " << setw(25) << s << setw(25) << s2 << endl ;
 	}
+
+	// for 2d, look for the 2 side patches
+	int side1 = 0 ;
+	int side2 = 0 ;
+	int maxNbrFace = 0;
+	int countSameMaxNbr = 0 ;
+	int nbr ;
+	if (is2D)
+	{
+		for (i=faces.begin(); i!=faces.end(); i++)
+		{
+			//printf("Faces BC: %d\n", (*i)->GetBC());
+			if ((*i)->GetBC()!=BC) // if the BC of this face is different than for the previous face
+			{
+				if (BC!=-1)
+				{
+					nbr = (count - (start-1)) ;
+					if ( nbr > maxNbrFace )
+					{
+						maxNbrFace = nbr ;
+						side1 = BC ;
+						countSameMaxNbr = 1 ;
+					}
+					else if (nbr ==  maxNbrFace )
+					{
+						side2 = BC ;
+						countSameMaxNbr ++ ;
+					}
+				}
+				start=count+1;
+				BC=(*i)->GetBC();
+			}
+			count++;
+		}
+		nbr = (count - (start-1)) ;
+		if ( nbr > maxNbrFace )
+		{
+			maxNbrFace = nbr ;
+			side1 = BC ;
+			countSameMaxNbr = 1 ;
+		}
+		else if (nbr ==  maxNbrFace )
+		{
+			side2 = BC ;
+			countSameMaxNbr ++ ;
+		}
+	}
+	if (countSameMaxNbr == 2 )
+	{
+		cout << PREFIX_INFO << "2 BCs have the same highest number of faces: they are assigned to 'back' and 'front' labels with an 'empty' type\n" ;
+		bcMapping[side1] = "front";
+		bcMapping2[side1] = "_007_empty";
+		bcMapping[side2] = "back";
+		bcMapping2[side2] = "_007_empty";
+	}
+
+	// write boundary
+	i=faces.begin();
+	BC=(*i)->GetBC();
+	count=0;
+	start=1;
 	for (i=faces.begin(); i!=faces.end(); i++)
 	{
 		//printf("Faces BC: %d\n", (*i)->GetBC());
@@ -1130,9 +1192,15 @@ main(int argc, char *argv[])
 
 
 	if (find(periodicBCs.begin(), periodicBCs.end(), BC)==periodicBCs.end())
-		fprintf(f,"%s\n{\n  type %s;\n  nFaces %d;\n  startFace %d;\n}\n\n", BCname.c_str(), BCname.c_str(), (count - (start-1)) , (start-1));
+	{
+		fprintf(f,"%s\n{\n  type %s;\n  nFaces %d;\n  startFace %d;\n}\n\n", BCname.c_str(), BCtype.c_str(), (count - (start-1)) , (start-1));
+	}
 	else
-		fprintf(f,"Cyclic-%s\n{\n  type %s;\n  nFaces %d;\n  startFace %d;\n}\n\n", BCname.c_str(), "cyclic", (count - (start-1)) , (start-1));
+	{
+		//fprintf(f,"Cyclic-%s\n{\n  type %s;\n  nFaces %d;\n  startFace %d;\n}\n\n", BCname.c_str(), "cyclic", (count - (start-1)) , (start-1));
+		fprintf(f,"Cyclic-%s\n{\n  type %s;\n  nFaces %d;\n  startFace %d;\n}\n\n", BCname.c_str(), BCtype.c_str(), (count - (start-1)) , (start-1));
+	}
+
 	fprintf(f,")\n\n");
 	fclose(f);
 
@@ -1183,7 +1251,7 @@ main(int argc, char *argv[])
 	/*
 	it2= blockMapping2.find(BC);
 	BCtype=(*it2).second.c_str();
-	*/
+	 */
 	nrCells=0;
 	for(int n=0; n<blocks.size();n++) if (blocks[n]->GetBC()==BC) nrCells+=blocks[n]->NrCells();
 	if (nrCells==0) continue;
