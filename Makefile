@@ -2,6 +2,7 @@ CFLAGS = -g
 LDFLAGS = -g
 LINKOPTS =
 LOCAL_LIBRARIES = 
+BINDIR=/apps/resources/cfd/bin/
 
 all:: gridpro2FOAM
 
@@ -30,4 +31,4 @@ tar::
 	tar cvfz GridPro2FOAM_5.7.tgz Makefile *.h *.hpp *.cpp *.c compare README
 
 install::
-	cp -v gridpro2FOAM $(FOAM_SITE_APPBIN)
+	cp -v gridpro2FOAM $(BINDIR) 
