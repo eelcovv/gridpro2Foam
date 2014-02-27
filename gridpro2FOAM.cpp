@@ -1219,7 +1219,7 @@ main(int argc, char *argv[])
 	if (nrBlockLabels)
 	{ int nrCells;
 	printf(" --> Writing %d block labels\n", nrBlockLabels);
-	filename = "cellzones";
+	filename = "cellZones";
 	filenamepath = fullPathToDir + filename ;
 	filenamepathChar = filenamepath.c_str();
 	f=fopen(filenamepathChar, "w");
